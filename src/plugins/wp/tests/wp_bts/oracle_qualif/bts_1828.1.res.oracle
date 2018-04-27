@@ -1,0 +1,27 @@
+# frama-c -wp -wp-model 'Typed (Ref)' [...]
+[kernel] Parsing tests/wp_bts/bts_1828.i (no preprocessing)
+[wp] Running WP plugin...
+[wp] Loading driver 'share/wp.driver'
+[wp] warning: Missing RTE guards
+[wp] 4 goals scheduled
+[wp] [Alt-Ergo] Goal typed_ref_f_assert_ok : Valid
+[wp] [Qed] Goal typed_ref_frame_post_ok_iff_ref : Valid
+[wp] [Qed] Goal typed_ref_frame_assert_ok_formal : Valid
+[wp] [Qed] Goal typed_ref_frame_assert_ok_global : Valid
+[wp] Proved goals:    4 / 4
+    Qed:             3 
+    Alt-Ergo:        1
+----------------------------------------------------------
+Functions           WP   Alt-Ergo    Total   Success
+f                   -       1 (14)     1       100%
+frame                3     -           3       100%
+----------------------------------------------------------
+//-------------------------------------------
+//--- Separation Hypotheses
+//-------------------------------------------
+(*
+behavior typed_ref:
+requires \separated(one,&zero);
+*)
+void frame(int *one, int arg);
+//-------------------------------------------

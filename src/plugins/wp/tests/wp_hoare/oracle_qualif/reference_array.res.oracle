@@ -1,0 +1,54 @@
+# frama-c -wp -wp-model 'Typed (Ref)' [...]
+[kernel] Parsing tests/wp_hoare/reference_array.i (no preprocessing)
+[wp] Running WP plugin...
+[wp] Loading driver 'share/wp.driver'
+[wp] warning: Missing RTE guards
+[wp] 36 goals scheduled
+[wp] [Alt-Ergo] Goal typed_ref_add_1_5_post : Valid
+[wp] [Qed] Goal typed_ref_add_1_5_assign_exit : Valid
+[wp] [Qed] Goal typed_ref_add_1_5_assign_normal : Valid
+[wp] [Qed] Goal typed_ref_add_1_5_call_add_5_pre : Valid
+[wp] [Alt-Ergo] Goal typed_ref_calls_on_array_dim_1_post_Pload : Valid
+[wp] [Alt-Ergo] Goal typed_ref_calls_on_array_dim_1_post_Preset : Valid
+[wp] [Alt-Ergo] Goal typed_ref_calls_on_array_dim_1_post_Padd : Valid
+[wp] [Qed] Goal typed_ref_calls_on_array_dim_1_assign_exit : Valid
+[wp] [Qed] Goal typed_ref_calls_on_array_dim_1_assign_normal : Valid
+[wp] [Qed] Goal typed_ref_calls_on_array_dim_1_call_load_5_pre : Valid
+[wp] [Qed] Goal typed_ref_calls_on_array_dim_1_call_reset_5_pre : Valid
+[wp] [Qed] Goal typed_ref_calls_on_array_dim_1_call_add_5_pre : Valid
+[wp] [Alt-Ergo] Goal typed_ref_calls_on_array_dim_2_post_Pload : Valid
+[wp] [Alt-Ergo] Goal typed_ref_calls_on_array_dim_2_post_Preset : Valid
+[wp] [Alt-Ergo] Goal typed_ref_calls_on_array_dim_2_post_Padd : Valid
+[wp] [Qed] Goal typed_ref_calls_on_array_dim_2_assign_exit : Valid
+[wp] [Qed] Goal typed_ref_calls_on_array_dim_2_assign_normal : Valid
+[wp] [Qed] Goal typed_ref_calls_on_array_dim_2_call_load_1_5_pre : Valid
+[wp] [Qed] Goal typed_ref_calls_on_array_dim_2_call_reset_1_5_pre : Valid
+[wp] [Qed] Goal typed_ref_calls_on_array_dim_2_call_add_1_5_pre : Valid
+[wp] [Alt-Ergo] Goal typed_ref_calls_on_array_dim_2_to_1_post_Pload : Valid
+[wp] [Alt-Ergo] Goal typed_ref_calls_on_array_dim_2_to_1_post_Preset : Valid
+[wp] [Alt-Ergo] Goal typed_ref_calls_on_array_dim_2_to_1_post_Padd : Valid
+[wp] [Qed] Goal typed_ref_calls_on_array_dim_2_to_1_assign_exit : Valid
+[wp] [Qed] Goal typed_ref_calls_on_array_dim_2_to_1_assign_normal : Valid
+[wp] [Qed] Goal typed_ref_calls_on_array_dim_2_to_1_call_load_5_pre : Valid
+[wp] [Qed] Goal typed_ref_calls_on_array_dim_2_to_1_call_reset_5_pre : Valid
+[wp] [Qed] Goal typed_ref_calls_on_array_dim_2_to_1_call_add_5_pre : Valid
+[wp] [Alt-Ergo] Goal typed_ref_load_1_5_post : Valid
+[wp] [Qed] Goal typed_ref_load_1_5_assign_exit : Valid
+[wp] [Qed] Goal typed_ref_load_1_5_assign_normal : Valid
+[wp] [Qed] Goal typed_ref_load_1_5_call_load_5_pre : Valid
+[wp] [Alt-Ergo] Goal typed_ref_reset_1_5_post : Valid
+[wp] [Qed] Goal typed_ref_reset_1_5_assign_exit : Valid
+[wp] [Qed] Goal typed_ref_reset_1_5_assign_normal : Valid
+[wp] [Qed] Goal typed_ref_reset_1_5_call_reset_5_pre : Valid
+[wp] Proved goals:   36 / 36
+    Qed:            24 
+    Alt-Ergo:       12
+----------------------------------------------------------
+Functions           WP   Alt-Ergo    Total   Success
+reset_1_5            3      1 (18)     4       100%
+load_1_5             3      1 (16)     4       100%
+add_1_5              3      1 (16)     4       100%
+calls_on_array_dim_1   5    3 (14)     8       100%
+calls_on_array_dim_2_to_1   5    3 (16)   8    100%
+calls_on_array_dim_2   5    3 (13)     8       100%
+----------------------------------------------------------

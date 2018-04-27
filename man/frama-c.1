@@ -1,0 +1,600 @@
+.\"------------------------------------------------------------------------
+.\"                                                                        
+.\"  This file is part of Frama-C.                                         
+.\"                                                                        
+.\"  Copyright (C) 2007-2017                                               
+.\"    CEA (Commissariat à l'énergie atomique et aux énergies              
+.\"         alternatives)                                                  
+.\"                                                                        
+.\"  you can redistribute it and/or modify it under the terms of the GNU   
+.\"  Lesser General Public License as published by the Free Software       
+.\"  Foundation, version 2.1.                                              
+.\"                                                                        
+.\"  It is distributed in the hope that it will be useful,                 
+.\"  but WITHOUT ANY WARRANTY; without even the implied warranty of        
+.\"  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         
+.\"  GNU Lesser General Public License for more details.                   
+.\"                                                                        
+.\"  See the GNU Lesser General Public License version 2.1                 
+.\"  for more details (enclosed in the file licenses/LGPLv2.1).            
+.\"                                                                        
+.\"------------------------------------------------------------------------
+
+.TH FRAMA-C 1 2016-12-02
+
+.SH NAME
+frama-c[.byte] \- a static analyzer for C programs
+.P
+frama-c-gui[.byte] \- the graphical interface of frama-c
+
+.SH SYNOPSIS
+.B frama-c
+[
+.I options
+]
+.I files
+
+.SH DESCRIPTION
+.B frama-c
+is a suite of tools dedicated to the analysis of source code written in C.
+It gathers several static analysis techniques in a single collaborative
+framework. This framework can be extended by additional plugins placed in the
+.B $FRAMAC_PLUGIN
+directory. The command
+.IP
+frama\-c \-\-plugins
+.PP
+will provide the full list of the plugins that are currently installed.
+.P
+.B frama-c-gui
+is the graphical user interface of
+.BR frama-c .
+It features the same options as the command-line version.
+.P
+.BR frama-c.byte\  and\  frama-c-gui.byte\  are
+the ocaml bytecode versions of the command-line and graphical user interface
+respectively.
+
+By default, Frama-C recognizes
+.B .c
+files as C files needing pre-processing and
+.B .i
+files as C files having been already pre-processed. Some plugins may extend
+the list of recognized files. Pre-processing can be customized through the
+.B -cpp-command
+and
+.B -cpp-extra-args
+options.
+
+.SH OPTIONS
+
+.B Syntax
+.P
+Options taking an additional parameter can also be written under the form
+.IP
+.RI - option = param
+.PP
+This form is mandatory when
+.I param
+starts with a dash ('-').
+.P
+Most options that take no parameter have a corresponding
+.IP
+.RI -no- option
+.PP
+option which has the opposite effect.
+.P
+.B Help options
+.TP
+.B \-help
+gives a short usage notice.
+.TP
+.BI \-kernel\-help
+prints the list of options recognized by Frama-C's kernel
+.TP
+.BI \-verbose\  n
+Sets verbosity level (default is 1). Setting it to 0 will output less
+progress messages. This level can also be set on a per\-\fIplugin\fP basis,
+with option \fB-\fP\fIplugin\fP\fB-verbose\fP \fIn\fP.
+Verbosity level of the kernel can be controlled with option
+\fB-kernel\-verbose\fP \fIn\fP.
+.TP
+.BI \-debug\ n
+Sets debugging level (default is 0, meaning no debugging messages). 
+This option has the same per-plugin (and kernel) specializations 
+as \fB-verbose\fP.
+.TP
+.B -quiet
+Sets verbosity and debugging level to 0.
+.P
+.B Options controlling Frama-C's kernel
+.TP
+.BI \-absolute\-valid\-range\  <min-max>
+considers that all numerical addresses in the range
+.I min-max
+are valid. Bounds are parsed as ocaml integer constants. By default,
+all numerical addresses are considered invalid.
+.TP
+.BI \-add\-path\  p1[,p2[...,pn]]
+adds directories
+.IR <p1>\  through
+.IR <pn>\  to
+the list of directories in which plugins are searched.
+.TP
+.B [-no]-aggressive-merging
+merges function definitions modulo renaming. Defaults to no.
+.TP
+.B [-no]-allow-duplication
+allows duplication of small blocks during normalization of tests and loops.
+Otherwise, normalization uses labels and gotos. Bigger blocks and blocks
+with non-trivial control flow are never duplicated. Defaults to yes.
+.TP
+.B [-no]-annot
+reads ACSL annotations. This is the default. Annotations are pre-processed
+by default. Use
+.B -no-pp-annot
+if you don't want to expand macros in annotations.
+.TP
+.BI \-big\-ints\-hex\  max
+integers larger than
+.I max
+are displayed in hexadecimal (by default, all integers are displayed in decimal)
+.TP
+.B -check
+performs integrity checks on the internal AST (for developers only).
+.TP
+.B [-no]-asm-contracts
+generates contracts for assembly code written according to gcc's extended
+syntax. Defaults to yes.
+.TP
+.B [-no]-asm-contracts-auto-validate
+automatically marks contracts generated from asm as valid. Defaults to no.
+.TP
+.B -c11
+enables (partial) C11 compatibility, e.g. typedef redefinitions.
+Defaults to no.
+.TP
+.B [-no]-collapse-call-cast
+allows implicit cast between the value returned by a function and the lvalue
+it is assigned to. Otherwise, a temporary variable is used and the cast is
+made explicit. Defaults to yes.
+.TP
+.B [-no]-constfold
+folds all syntactically constant expressions in the code before
+analyses. Defaults to no.
+.TP
+.B -const-readonly
+.RB variables\ with\  const \ qualifier\ must\ be\ actually
+constant. Defaults to yes. The opposite option is
+.BR -unsafe-writable .
+.TP
+.B [-no]-continue-annot-error
+When analyzing an annotation, the default behavior (the
+.B -no
+version of this option) when a typechecking error occurs is to reject the
+source file as is the case for typechecking errors within the C code. With
+this option on, the typechecker will only output a warning and discard the
+annotation but typechecking will continue 
+(errors in C code are still fatal, though).
+.TP
+.BI -cpp-command\  cmd
+Uses
+.I cmd
+as the command to pre-process C files. Defaults to the
+.B CPP
+environment variable or to
+.IP
+gcc \-C \-E \-I.
+.IP
+if it is not set. In order to preserve ACSL annotations, the preprocessor must
+keep comments (the
+.B -C
+option for gcc). 
+.IR %1 \ and\  %2
+can be used in
+.I cmd
+to denote the original source file and the pre-processed file respectively.
+.TP
+.BI -cpp-extra-args\  args
+Gives additional arguments to the pre-processor. This is only useful when
+.B -preprocess-annot
+is set. Pre-processing annotations is done in two separate pre-processing
+stages. The first one is a normal pass on the C code which retains macro
+definitions. These
+are then used in the second pass during which annotations are pre-processed.
+.I args
+are used only for the first pass, so that arguments that should not be used
+twice (such as additional include directives or macro definitions) must thus
+go there instead of
+.BR -cpp-command .
+.TP
+.B [-no]-cpp-frama-c-compliant
+indicates that the chosen preprocessor complies to some Frama-C requirements,
+such as accepting the same set of options as GNU cpp, and accepting
+architecture-specific options such as -m32/-m64. Default values depend on the
+installed preprocessor at configure time.
+See also
+.BR -pp-annot .
+.TP
+.BI -custom-annot-char\  c
+.RI uses\ character\  c \ for\ starting\ ACSL\ annotations.
+.TP
+.B [-no]-autoload-plugins
+When on, load all the dynamic plugins found in the search path (see
+.B -print-plugin-path
+for more information on the default search path). Otherwise, only plugins
+requested by
+.B -load-module
+will be loaded. Default behavior is on.
+.TP
+.BI -enums\  repr
+Choose the way the representation of enumerated types is determined.
+.B frama-c -enums help
+gives the list of available options. Default is
+.B gcc-enums
+.TP
+.BI -float-digits\  n
+When outputting floating-point numbers, display
+.I n
+digits. Defaults to 12.
+.TP
+.B -float-flush-to-zero
+Floating point operations flush to zero.
+.TP
+.B -float-hex
+display floats as hexadecimal.
+.TP
+.B -float-normal
+display floats with the standard OCaml routine.
+.TP
+.B -float-relative
+display float intervals as [
+.IR lower_bound ++ width\  ].
+.TP
+.B [-no]-frama-c-stdlib
+.RB adds\ -I $FRAMAC_SHARE /libc
+to the options given to the cpp command.
+.RB If\  -cpp-frama-c-compliant
+is not false, also adds
+.B -nostdinc
+to prevent an inconsistent mix of system and Frama-C header files.
+Defaults to yes.
+.TP
+.BI -implicit-function-declaration\  <action>
+warns or aborts when a function is called before it has been declared.
+\fI<action>\fP can be one of \fBignore\fP, \fBwarn\fP, or
+\fBerror\fP. Defaults to \fBwarn\fP.
+.TP
+.B -initialized-padding-locals
+Implicit initialization of locals sets padding bits to 0. If false,
+padding bits are left uninitialized (defaults to yes).
+.TP
+.B -journal-disable
+Do not output a journal of the current session. See
+.BR -journal-enable .
+.TP
+.B -journal-enable
+On by default, dumps a journal of all the actions performed during the current
+Frama-C session in the form of an ocaml script that can be replayed with
+.BR -load-script .
+The name of the script can be set with the
+.B -journal-name
+option.
+.TP
+.BI -journal-name\  name
+Set the name of the journal file (without the
+.I .ml
+extension). Defaults to frama_c_journal.
+.TP
+.B [-no]-keep-comments
+Tries to preserve comments when pretty-printing the source code (defaults to
+no).
+.TP
+.B [-no]-keep-switch
+When
+.B -simplify-cfg
+is set, keeps switch statements. Defaults to no.
+.TP
+.B -keep-unused-specified-functions
+See
+.B -remove-unused-specified-functions
+.TP
+.BI -kernel-log\  kind : file
+copies log messages from the Frama-C's kernel to \fIfile\fP. \fIkind\fP
+specifies which kinds of messages to be copied (e.g. \fBw\fP for warnings,
+\fBe\fP for errors, etc.). See \fB-kernel-help\fP for more details.
+Can also be set on a per-plugin basis, with option
+.BI - plugin \-log \fP.
+.TP
+.B [-no]-lib-entry
+Indicates that the entry point is called during program execution. This
+implies in particular that global variables cannot be assumed to have their
+initial values. The default is
+.BR -no-lib-entry :
+the entry point is also the starting point of the program and globals have
+their initial value.
+.TP
+.BI -load\  file
+loads the (previously saved) state contained in
+.IR file .
+.TP
+.BI -load-module\  m1[,m2[...,mn]]
+loads the ocaml modules
+.IR <m1>\  through\  <mn> .
+These modules must be
+.BR .cmxs\  files
+for the native code version of Frama-c and
+.BR .cmo\  or .cma\  files
+for the bytecode version (see the Dynlink section of the OCaml manual for more
+information). All modules which are present in the plugin search paths are
+automatically loaded.
+.TP
+.BI -load-script\  s1[,s2,[...,sn]]
+loads the ocaml scripts
+.IR <s1>\  through\  <sn> .
+The scripts must be
+.BR .ml\  files.
+They must be compilable relying only on the OCaml standard library and
+Frama-C's API. If some custom compilation step is needed, compile them
+outside of Frama-C and use
+.B -load-module
+instead.
+.TP
+.BI -machdep\  machine
+uses
+.I machine
+as the current machine-dependent configuration (size of the various
+integer types, endiandness, ...). The list of currently supported machines is
+available through
+.B -machdep help
+option. Default is
+.B x86_32
+.TP
+.BI -main\  f
+Sets
+.I f
+as the entry point of the analysis. Defaults to 'main'. By default, it is
+considered as the starting point of the program under analysis. Use
+.B -lib-entry
+if
+.I f
+is supposed to be called in the middle of an execution.
+.TP
+.B -obfuscate
+prints an obfuscated version of the code (where original identifiers are
+replaced by meaningless ones) and exits. The correspondence table between
+original and new symbols is kept at the beginning of the result.
+.TP
+.BI -ocode\  file
+redirects pretty-printed code to
+.I file
+instead of standard output.
+.TP
+.B [-no]-orig-name
+During the normalization phase, some variables may get renamed when different
+variables with the same name can co-exist (e.g. a global variable and a formal
+parameter). When this option is on, a message is printed each time this occurs.
+Defaults to no.
+.TP
+.B [-no]-pp-annot
+pre-processes annotations. This is currently only possible when using gcc (or
+GNU cpp) pre-processor. The default is to pre-process annotations when the
+default pre-processor is identified as GNU or GNU-like. See also
+.B -cpp-frama-c-compliant
+.TP
+.B [-no]-print
+pretty-prints the source code as normalized by CIL (defaults to no).
+.TP
+.B [-no]-print-libc
+.RB expands\  #include
+directives in the pretty-printed CIL code for files in the Frama-C standard
+library (defaults to no).
+.TP
+.B -print-libpath
+outputs the directory where the Frama-C kernel library is installed.
+.TP
+.B -print-path
+alias of
+.B -print-share-path
+.TP
+.B -print-plugin-path
+outputs the directory where Frama-C searches its plugins
+(can be overridden by the
+.B FRAMAC_PLUGIN
+variable and the
+.B -add-path
+option)
+.TP
+.B -print-share-path
+outputs the directory where Frama-C stores its data (can be overridden by the
+.B FRAMAC_SHARE
+variable)
+.TP
+.B [-no]-remove-exn
+.RB transforms\  throw \ and\  try/catch \ statements
+into normal C functions. Defaults to no, unless the input source language has
+an exception mechanism.
+.TP
+.BI -remove-projects\  p1,...,pn
+removes the given projects
+.IR p1,...,pn .
+.BR @all_but_current \ removes\ all\ projects\ but\ the\ current\ one.
+.TP
+.B -remove-unused-specified-functions
+keeps function prototypes that have an ACSL specification but are not used
+in the code. This is the default. Functions having the attribute
+.B FRAMAC_BUILTIN
+are always kept.
+.TP
+.B -safe-arrays
+For multidimensional arrays or arrays that are fields inside structs,
+assumes that all accesses must be in bound (set by default). The
+opposite option is
+.BR -unsafe-arrays .
+.TP
+.BI -save\  file
+Saves Frama-C's state into
+.I file
+after analyses have taken place.
+.TP
+.BI -session\  s
+.RI sets\  s \ as\ the\ directory\ in\ which\ session\ files\ are\ searched.
+.TP
+.B [-no]-set-project-as-default
+the current project becomes the default one (and so future
+.B -then
+sequences are applied on it). Defaults to no.
+.TP
+.B [-no]-simplify-cfg
+removes break, continue and switch statements before analyses. Defaults to
+no.
+.TP
+.B [-no]-simplify-trivial-loops
+simplifies trivial loops such as
+.B do ... while (0)
+loops. Defaults to yes.
+.TP
+.B -then
+allows one to compose analyzes: a first run of Frama-C will occur with the
+options before
+.B -then
+and a second run will be done with the options after 
+.B -then
+on the current project from the first run.
+.TP
+.B -then-last
+.RB like\  -then ,
+but the second group of actions is executed
+on the last project created by a program transformer.
+.TP
+.BI \-then\-on\  prj
+Similar to
+.B -then
+except that the second run is performed in project
+.IR prj .
+If no such project exists, Frama-C exits with an error.
+.TP
+.B -then-replace
+.RB like\  -then-last ,
+but also removes the previous current project.
+.TP
+.BI -time\  file
+appends user time and date in the given
+.I file
+when Frama-C exits.
+.TP
+.B -typecheck
+forces typechecking of the source files. This option is only relevant if no
+further analysis is requested (as typechecking will implicitly occur before
+the analysis is launched).
+.TP
+.BI -ulevel\  n
+syntactically unroll loops
+.I n
+times before the analysis. This can be quite costly and some plugins (e.g.
+the value analysis) provide more efficient ways to perform the same thing.
+See their respective manuals for more information. This can also be activated
+on a per-loop basis via the
+.B loop pragma unroll <m>
+directive. A negative value for
+.I n
+will inhibit such pragmas.
+.TP
+.B [-no]-ulevel-force
+.RB ignores \ UNROLL \ loop\ pragmas\ disabling\ unrolling.
+.TP
+.B [-no]-unicode
+outputs ACSL formulas with utf8 characters. This is the default. When given the
+.B -no-unicode
+option, Frama-C will use the ASCII version instead. See the ACSL manual for
+the correspondence.
+.TP
+.B -unsafe-arrays
+see
+.B -safe-arrays
+.TP
+.B [-no]-unspecified-access
+checks that read/write accesses occurring in an unspecified order (according to
+the C standard's notion of sequence points) are performed on separate locations.
+With
+.BR -no-unspecified-access ,
+assumes that it is always the case (this is the default).
+.TP
+.B \-version
+outputs the version string of Frama-C.
+.TP
+.BI -warn-decimal-float\  <freq>
+warns when a floating-point constant cannot be exactly represented (e.g. 0.1).
+.I <freq>
+can be one of
+.BR none ,\  once ,\ or\  all
+.TP
+.B [-no]-warn-signed-downcast
+generates alarms when signed downcasts may exceed the destination range
+(defaults to no).
+.TP
+.B [-no]-warn-signed-overflow
+generates alarms for signed operations that overflow (defaults to yes).
+.TP
+.B [-no]-warn-unsigned-downcast
+generates alarms when unsigned downcasts may exceed the destination
+range (defaults to no).
+.TP
+.B [-no]-warn-unsigned-overflow
+generates alarms for unsigned operations that overflow (defaults to no).
+.P
+.B Plugin-specific options
+.P
+For each
+.IR plugin ,
+the command
+.IP
+.RI frama-c\ - plugin -help
+.PP
+will give the list of options that are specific to the plugin.
+
+.SH EXIT STATUS
+.TP
+.B 0
+Successful execution
+.TP
+.B 1
+Invalid user input
+.TP
+.B 2
+User interruption (kill or equivalent)
+.TP
+.B 3
+Unimplemented feature
+.TP
+.B 4 5 6
+Internal error
+.TP
+.B 125
+Unknown error
+.P
+Exit status greater than 2 can be considered as a bug (or a feature request 
+for the case of exit status 3) and may be reported on Frama-C's BTS (see below).
+
+.SH ENVIRONMENT VARIABLES
+It is possible to control the places where Frama-C looks for its files
+through the following variables.
+.TP
+.B FRAMAC_LIB
+The directory where kernel's compiled interfaces are installed.
+.TP
+.B FRAMAC_PLUGIN
+The directory where Frama-C can find standard plugins. If you wish to have
+plugins in several places, use \fB-add-path\fP instead.
+.TP
+.B FRAMAC_SHARE
+The directory where Frama-C data (e.g. its version of the standard library) is installed.
+
+.SH SEE ALSO
+.BR Frama-C\ user\ manual :\  $FRAMAC_SHARE /manuals/user-manual.pdf
+.P
+.BR Frama-C\ homepage :
+http://frama-c.com
+.P
+.BR Frama-C\ BTS :
+http://bts.frama-c.com

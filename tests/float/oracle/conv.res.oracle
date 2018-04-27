@@ -1,0 +1,90 @@
+[kernel] Parsing tests/float/conv.i (no preprocessing)
+[value] Analyzing a complete application starting at main
+[value] Computing initial state
+[value] Initial state computed
+[value:initial-state] Values of globals at initialization
+  f ∈ {0}
+  d ∈ {0}
+  v ∈ [--..--]
+[value] computing for function main1 <- main.
+    Called from tests/float/conv.i:105.
+tests/float/conv.i:15:[value] Frama_C_show_each: {0}
+tests/float/conv.i:18:[value] Frama_C_show_each: {1.40129846432e-45}
+tests/float/conv.i:22:[value] Frama_C_show_each: [1.40129846432e-43 .. 2.40330263757e+12]
+tests/float/conv.i:24:[value] warning: assertion got status unknown.
+tests/float/conv.i:28:[value] Frama_C_show_each: {3.40282346639e+38}
+tests/float/conv.i:29:[value] assertion got status valid.
+tests/float/conv.i:32:[value] warning: non-finite float value. assert \is_finite(*((float *)(&i)));
+tests/float/conv.i:33:[value] Frama_C_show_each: [-3.40282346639e+38 .. 3.40282346639e+38]
+tests/float/conv.i:37:[value] Frama_C_show_each: {-3.40282346639e+38}
+tests/float/conv.i:38:[value] assertion got status valid.
+tests/float/conv.i:41:[value] warning: non-finite float value. assert \is_finite(*((float *)(&i)));
+tests/float/conv.i:42:[value] Frama_C_show_each: [-3.40282346639e+38 .. 3.40282346639e+38]
+tests/float/conv.i:45:[value] Frama_C_show_each: [0. .. 1.40129846432e-45]
+tests/float/conv.i:48:[value] warning: assertion got status unknown.
+tests/float/conv.i:49:[value] Frama_C_show_each: [-3.40282346639e+38 .. 3.40282346639e+38]
+tests/float/conv.i:52:[value] Frama_C_show_each: [-3.40282346639e+38 .. 3.40282346639e+38]
+tests/float/conv.i:55:[value] Frama_C_show_each: [-3.40282346639e+38 .. 3.40282346639e+38]
+[value] Recording results for main1
+[value] Done for function main1
+[value] computing for function main2 <- main.
+    Called from tests/float/conv.i:106.
+tests/float/conv.i:63:[value] Frama_C_show_each: {0}
+tests/float/conv.i:66:[value] Frama_C_show_each: {4.94065645841e-324}
+tests/float/conv.i:69:[value] Frama_C_show_each: [4.94065645841e-322 .. 9.22442153475e+159]
+tests/float/conv.i:73:[value] Frama_C_show_each: {1.79769313486e+308}
+tests/float/conv.i:74:[value] assertion got status valid.
+tests/float/conv.i:77:[value] Frama_C_show_each: [-1.79769313486e+308 .. 1.79769313486e+308]
+tests/float/conv.i:80:[value] Frama_C_show_each: [-1.79769313486e+308 .. 1.79769313486e+308]
+tests/float/conv.i:84:[value] Frama_C_show_each: {-1.79769313486e+308}
+tests/float/conv.i:85:[value] assertion got status valid.
+tests/float/conv.i:88:[value] Frama_C_show_each: [-1.79769313486e+308 .. 1.79769313486e+308]
+tests/float/conv.i:91:[value] Frama_C_show_each: [0. .. 4.94065645841e-324]
+tests/float/conv.i:94:[value] warning: assertion got status unknown.
+tests/float/conv.i:95:[value] Frama_C_show_each: [-1.79769313486e+308 .. 1.79769313486e+308]
+tests/float/conv.i:98:[value] Frama_C_show_each: [-1.79769313486e+308 .. 1.79769313486e+308]
+tests/float/conv.i:101:[value] Frama_C_show_each: [-1.79769313486e+308 .. 1.79769313486e+308]
+[value] Recording results for main2
+[value] Done for function main2
+[value] Recording results for main
+[value] done for function main
+[value] ====== VALUES COMPUTED ======
+[value:final-states] Values at end of function main1:
+  f ∈ [-3.40282346639e+38 .. 3.40282346639e+38]
+  i ∈ {0; 0x7FFFFFFF}
+  ui ∈ {0xFFFFFFFF}
+[value:final-states] Values at end of function main2:
+  d ∈ {-1.79769313486e+308}
+  i ∈ {-1; 0}
+  ui ∈ {0xFFFFFFFFFFFFFFFF}
+[value:final-states] Values at end of function main:
+  f ∈ [-3.40282346639e+38 .. 3.40282346639e+38]
+  d ∈ {-1.79769313486e+308}
+[from] Computing for function main1
+[from] Done for function main1
+[from] Computing for function main2
+[from] Done for function main2
+[from] Computing for function main
+[from] Done for function main
+[from] ====== DEPENDENCIES COMPUTED ======
+    These dependencies hold at termination for the executions that terminate:
+[from] Function main1:
+  f FROM \nothing
+[from] Function main2:
+  d FROM \nothing
+[from] Function main:
+  f FROM \nothing
+  d FROM \nothing
+[from] ====== END OF DEPENDENCIES ======
+[inout] Out (internal) for function main1:
+      f; i; ui
+[inout] Inputs for function main1:
+      f; v
+[inout] Out (internal) for function main2:
+      d; i; ui
+[inout] Inputs for function main2:
+      d; v
+[inout] Out (internal) for function main:
+      f; d
+[inout] Inputs for function main:
+      f; d; v
